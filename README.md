@@ -23,7 +23,7 @@ Filters combine using AND and are applied on the backend. Date boundaries are in
 - `GET /api/overview` — KPIs, daily revenue trend, order type mix, top outlet snapshot.
 - `GET /api/revenue?granularity=day|week|month` — trend and revenue breakdowns.
 - `GET /api/categories` — category revenue, units, and bills.
-- `GET /api/products?sort=revenue|quantity|name&limit=100` — product metrics.
+- `GET /api/products?sort=revenue|quantity|name&limit=100` — product metrics and category revenue/unit summaries.
 - `GET /api/outlets` — outlet comparison and leading category.
 - `GET /api/orders?page=1&page_size=25&search=...` — paginated line items.
 - `GET /api/export` — CSV of all matching line items.

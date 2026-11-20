@@ -107,7 +107,9 @@ def categories(start:Optional[str]=None,end:Optional[str]=None,outlet:Optional[s
 def products(start:Optional[str]=None,end:Optional[str]=None,outlet:Optional[str]=None,category:Optional[str]=None,order_type:Optional[str]=None,settlement:Optional[str]=None,brand:Optional[str]=None,sort:str="revenue",limit:int=100):
     w,a=filters(start,end,outlet,category,order_type,settlement,brand); order={"revenue":"revenue","quantity":"quantity","name":"name"}.get(sort)
     if not order: raise HTTPException(400,"sort must be revenue, quantity or name")
-    return {"data":records(run(f'SELECT Item AS name, "Group" AS category, Brand AS brand, SUM(Quantity) quantity, SUM(Line_Revenue) revenue, SUM(Line_Revenue)/NULLIF(SUM(SUM(Line_Revenue)) OVER (),0)*100 AS contribution, COUNT(DISTINCT BillNo) orders FROM orders{w} GROUP BY 1,2,3 ORDER BY {order} {"ASC" if sort=="name" else "DESC"} LIMIT ?',a+[min(max(limit,1),500)]))}
+    data=records(run(f'SELECT Item AS name, "Group" AS category, Brand AS brand, SUM(Quantity) quantity, SUM(Line_Revenue) revenue, SUM(Line_Revenue)/NULLIF(SUM(SUM(Line_Revenue)) OVER (),0)*100 AS contribution, COUNT(DISTINCT BillNo) orders FROM orders{w} GROUP BY 1,2,3 ORDER BY {order} {"ASC" if sort=="name" else "DESC"} LIMIT ?',a+[min(max(limit,1),500)]))
+    cats=records(run(f'SELECT "Group" AS name, SUM(Line_Revenue) revenue, SUM(Quantity) quantity FROM orders{w} GROUP BY 1 ORDER BY 2 DESC',a))
+    return {"data":data,"categories":cats}
 
 @app.get("/api/outlets")
 def outlets(start:Optional[str]=None,end:Optional[str]=None,outlet:Optional[str]=None,category:Optional[str]=None,order_type:Optional[str]=None,settlement:Optional[str]=None,brand:Optional[str]=None):
