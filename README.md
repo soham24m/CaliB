@@ -2,6 +2,8 @@
 
 A responsive business intelligence dashboard for the supplied CaliB Foods order line dataset. React and Recharts provide the client; FastAPI serves parameterized DuckDB aggregations and paginated transaction data.
 
+The sidebar brand uses the supplied California Burrito logo at `public/images/logo.png`, served locally with the app.
+
 ## Stack and architecture
 
 - **Client:** React 19, TypeScript, Vite, Recharts, Lucide React.
