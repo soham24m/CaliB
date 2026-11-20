@@ -13,7 +13,8 @@ from fastapi.staticfiles import StaticFiles
 import io, csv
 
 ROOT = Path(__file__).resolve().parent
-DB_PATH = Path(os.getenv("CALIB_DB", ROOT / "data" / "calib.duckdb"))
+DEFAULT_DB_PATH = Path("/tmp/calib.duckdb") if os.getenv("VERCEL") else ROOT / "data" / "calib.duckdb"
+DB_PATH = Path(os.getenv("CALIB_DB", DEFAULT_DB_PATH))
 REPO_ROOT = ROOT.parent
 EXCEL_PATH = Path(os.getenv("CALIB_EXCEL", REPO_ROOT / "data" / "data.xlsx"))
 EXPECTED = ["BillNo", "Outlet_Name", "Order_Datetime", "Group", "Order_Type", "Item", "Price", "Quantity", "Settlement", "Brand"]

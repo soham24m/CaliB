@@ -70,6 +70,8 @@ vite.config.ts        local API proxy
 
 Aggregations and filters execute in DuckDB; only chart aggregates, option lists, and a bounded transaction page are sent to the client. Workbook ingestion occurs once when the database table is absent. The frontend and API must be served together because the dashboard calls same-origin `/api` routes; a static-only deployment will show the page but the charts, filters, and exports will fail.
 
+To deploy this repository on Vercel, import the GitHub repository with the project root set to the repository root. The checked-in `vercel.json` selects the FastAPI runtime, builds the Vite frontend, bundles the Excel workbook, and routes the app through one same-origin FastAPI application. No separate API URL or environment variable is needed. Vercel's function filesystem is read-only, so the app stores its temporary DuckDB database under `/tmp` and rebuilds it from the workbook when a new function instance starts.
+
 To build and run the complete website as one service with Docker:
 
 ```sh
