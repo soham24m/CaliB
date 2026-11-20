@@ -1,2 +1,17 @@
+[project]
+name = "calib-business-analytics"
+version = "1.0.0"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "duckdb>=1.1",
+  "pandas>=2.2",
+  "openpyxl>=3.1",
+]
+
 [tool.vercel]
 entrypoint = "backend.main:app"
+
+[tool.vercel.fastapi.static]
+cdn = true

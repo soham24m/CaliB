@@ -138,4 +138,4 @@ def export(start:Optional[str]=None,end:Optional[str]=None,outlet:Optional[str]=
 # Serve the built React application from the API process so local use has one origin.
 DIST = ROOT.parent / "dist"
 if DIST.exists():
-    app.mount("/", StaticFiles(directory=str(DIST), html=True), name="frontend")
+    app.mount("/", StaticFiles(directory="dist", html=True), name="frontend")
