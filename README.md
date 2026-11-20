@@ -45,13 +45,14 @@ The default source path is `/Users/sohamsiddharthamishra/Downloads/data.xlsx`. S
 python3 -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
 ```
 
-In another terminal:
+Build the client once, then start the API. The API serves both the built frontend and `/api` routes from one origin:
 
 ```sh
-npm run dev -- --host 0.0.0.0
+npm run build
+python3 -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-Open `http://localhost:5173`. API: `http://localhost:8000`; interactive docs: `http://localhost:8000/docs`. Use `CALIB_DB` to select a different DuckDB file. The database is generated locally and excluded from Git.
+Open `http://localhost:8000`. Interactive API docs are at `http://localhost:8000/docs`. For frontend-only development with hot reload, `npm run dev` uses Vite’s proxy to the API. Use `CALIB_DB` to select a different DuckDB file. The database is generated locally and excluded from Git.
 
 ## Project structure
 

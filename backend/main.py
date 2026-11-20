@@ -9,6 +9,7 @@ import pandas as pd
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 import io, csv
 
 ROOT = Path(__file__).resolve().parent
@@ -131,3 +132,8 @@ def export(start:Optional[str]=None,end:Optional[str]=None,outlet:Optional[str]=
     df=run(f'SELECT BillNo, Order_Datetime, Outlet_Name, Item, "Group", Order_Type, Price, Quantity, Line_Revenue, Settlement FROM orders{w} ORDER BY Order_Datetime DESC',a)
     s=io.StringIO(); df.to_csv(s,index=False)
     return StreamingResponse(iter([s.getvalue()]),media_type="text/csv",headers={"Content-Disposition":"attachment; filename=calib-transactions.csv"})
+
+# Serve the built React application from the API process so local use has one origin.
+DIST = ROOT.parent / "dist"
+if DIST.exists():
+    app.mount("/", StaticFiles(directory=str(DIST), html=True), name="frontend")
