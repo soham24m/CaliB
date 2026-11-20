@@ -73,3 +73,12 @@ Aggregations and filters execute in DuckDB; only chart aggregates, option lists,
 ## Validation status
 
 The dashboard uses the supplied workbook path by default. On first API startup it logs the number of valid lines ingested; `/api/health` exposes line count, distinct bills, and date bounds for reconciliation. See `TECHNICAL_DECISIONS.md` for implementation trade-offs.
+
+
+## Design Decisions
+
+The dashboard uses a restricted California Burrito palette: red and deep red for brand emphasis, forest green for ink and chart structure, and cream for the page canvas. The official logo is served locally. The restricted series colors keep data views visually tied to the brand. Gabarito provides the brand's bold display style and is bundled locally with its OFL license; the 700 weight is preloaded. Contrast values and exceptions are documented in [design_notes.md](docs/design_notes.md); deep red is used for small cream text on red surfaces, while cream-on-red is reserved for bold large text.
+
+Responsive render captures are stored in `docs/screenshots/` at desktop (1440px), tablet (768px), and mobile (390px) widths.
+
+The dashboard includes an About section with Soham Siddhartha Mishra’s supplied photo, profile, education, and listed skills. The footer credits him for the design and build.

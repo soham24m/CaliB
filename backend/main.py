@@ -80,14 +80,14 @@ def filter_options():
         col_sql=f'"{col}"'
         out[key]=run(f"SELECT DISTINCT {col_sql} AS value FROM orders WHERE {col_sql} IS NOT NULL ORDER BY 1").value.tolist()
     dates=run("SELECT CAST(MIN(Order_Datetime) AS DATE) min_date, CAST(MAX(Order_Datetime) AS DATE) max_date FROM orders").iloc[0].to_dict()
-    out["date_range"]={k:str(v) for k,v in dates.items()}
+    out["date_range"]={k:(pd.Timestamp(v).date().isoformat() if pd.notnull(v) else None) for k,v in dates.items()}
     return out
 
 @app.get("/api/overview")
 def overview(start:Optional[str]=None,end:Optional[str]=None,outlet:Optional[str]=None,category:Optional[str]=None,order_type:Optional[str]=None,settlement:Optional[str]=None,brand:Optional[str]=None):
     w,a=filters(start,end,outlet,category,order_type,settlement,brand)
     k=records(run(f"SELECT COALESCE(SUM(Line_Revenue),0) revenue, COUNT(DISTINCT BillNo) orders, COALESCE(SUM(Quantity),0) units, COUNT(*) records, COALESCE(SUM(Line_Revenue)/NULLIF(COUNT(DISTINCT BillNo),0),0) aov FROM orders{w}",a))[0]
-    return {"kpis":k,"trend":records(run(f"SELECT CAST(Order_Datetime AS DATE) date, SUM(Line_Revenue) revenue FROM orders{w} GROUP BY 1 ORDER BY 1",a)),"distribution":records(run(f"SELECT Order_Type name, COUNT(DISTINCT BillNo) value FROM orders{w} GROUP BY 1 ORDER BY 2 DESC",a)),"insights":records(run(f"SELECT Outlet_Name outlet, SUM(Line_Revenue) revenue, COUNT(DISTINCT BillNo) orders FROM orders{w} GROUP BY 1 ORDER BY 2 DESC LIMIT 3",a))}
+    return {"kpis":k,"trend":records(run(f"SELECT CAST(Order_Datetime AS DATE) date, SUM(Line_Revenue) revenue FROM orders{w} GROUP BY 1 ORDER BY 1",a)),"distribution":records(run(f"SELECT Order_Type name, COUNT(DISTINCT BillNo) value FROM orders{w} GROUP BY 1 ORDER BY 2 DESC",a)),"categories":records(run(f'SELECT "Group" name, SUM(Line_Revenue) revenue FROM orders{w} GROUP BY 1 ORDER BY 2 DESC',a)),"top_items":records(run(f"SELECT Item name, SUM(Line_Revenue) revenue, SUM(Quantity) quantity FROM orders{w} GROUP BY 1 ORDER BY 2 DESC LIMIT 8",a)),"settlements":records(run(f"SELECT Settlement name, SUM(Line_Revenue) revenue FROM orders{w} GROUP BY 1 ORDER BY 2 DESC",a)),"heatmap":records(run(f"SELECT EXTRACT(DOW FROM Order_Datetime)::INTEGER weekday, EXTRACT(HOUR FROM Order_Datetime)::INTEGER hour_of_day, SUM(Line_Revenue) revenue FROM orders{w} GROUP BY 1,2",a)),"insights":records(run(f"SELECT Outlet_Name outlet, SUM(Line_Revenue) revenue, COUNT(DISTINCT BillNo) orders FROM orders{w} GROUP BY 1 ORDER BY 2 DESC LIMIT 3",a))}
 
 @app.get("/api/revenue")
 def revenue(start:Optional[str]=None,end:Optional[str]=None,outlet:Optional[str]=None,category:Optional[str]=None,order_type:Optional[str]=None,settlement:Optional[str]=None,brand:Optional[str]=None,granularity:str="day"):
