@@ -34,14 +34,14 @@ All analytical endpoints accept `start`, `end`, `outlet`, `category`, `order_typ
 
 ## Install and run locally
 
-Requirements: Node 20+, Python 3.10+, and the workbook.
+Requirements: Node 20+ and Python 3.10+. The supplied workbook is included at `data/data.xlsx`.
 
 ```sh
 npm install
 python3 -m pip install -r backend/requirements.txt
 ```
 
-The default source path is `/Users/sohamsiddharthamishra/Downloads/data.xlsx`. Set `CALIB_EXCEL=/path/to/data.xlsx` to use another copy. Start the API (first start ingests the workbook):
+The default source path is `data/data.xlsx`. Set `CALIB_EXCEL=/path/to/data.xlsx` to use another copy. Start the API (first start ingests the workbook):
 
 ```sh
 python3 -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
@@ -68,7 +68,16 @@ vite.config.ts        local API proxy
 
 ## Performance and deployment
 
-Aggregations and filters execute in DuckDB; only chart aggregates, option lists, and a bounded transaction page are sent to the client. Workbook ingestion occurs once when the database table is absent. For deployment, build the client with `npm run build`, host `dist/` behind a static server, and run the FastAPI service with a persistent writable DuckDB path and configured workbook path. Update CORS origins to the deployed frontend domain and place both behind HTTPS/reverse proxy as appropriate. This local assessment build does not include authentication, scheduled refresh, or cloud deployment configuration.
+Aggregations and filters execute in DuckDB; only chart aggregates, option lists, and a bounded transaction page are sent to the client. Workbook ingestion occurs once when the database table is absent. The frontend and API must be served together because the dashboard calls same-origin `/api` routes; a static-only deployment will show the page but the charts, filters, and exports will fail.
+
+To build and run the complete website as one service with Docker:
+
+```sh
+docker build -t calib-dashboard .
+docker run --rm -p 8000:8000 calib-dashboard
+```
+
+Open `http://localhost:8000`. The container builds the React app, serves it from FastAPI, and ingests the bundled workbook into DuckDB on first startup. For a cloud deployment, use this repository's Dockerfile as the service build. Attach persistent storage at `/app/backend/data` if the DuckDB database should survive restarts; otherwise the bundled workbook will be ingested again on a fresh instance. The workbook is included in the repository at the user's request.
 
 ## Validation status
 

@@ -14,7 +14,8 @@ import io, csv
 
 ROOT = Path(__file__).resolve().parent
 DB_PATH = Path(os.getenv("CALIB_DB", ROOT / "data" / "calib.duckdb"))
-EXCEL_PATH = Path(os.getenv("CALIB_EXCEL", "/Users/sohamsiddharthamishra/Downloads/data.xlsx"))
+REPO_ROOT = ROOT.parent
+EXCEL_PATH = Path(os.getenv("CALIB_EXCEL", REPO_ROOT / "data" / "data.xlsx"))
 EXPECTED = ["BillNo", "Outlet_Name", "Order_Datetime", "Group", "Order_Type", "Item", "Price", "Quantity", "Settlement", "Brand"]
 app = FastAPI(title="CaliB Business Analytics API", version="1.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"], allow_methods=["GET"], allow_headers=["*"])
